@@ -308,6 +308,8 @@ module.exports = {
   page3: hostPage3,
   getName,
   setName,
+  createDog,
+  findDogByName,
   updateLast,
   searchName,
   notFound,
