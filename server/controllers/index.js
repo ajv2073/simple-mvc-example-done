@@ -4,6 +4,8 @@ const models = require('../models');
 // get the Cat model
 const { Cat } = models;
 
+const Dog = models.Dog.DogModel;
+
 // default fake data so that we have something to work with until we make a real Cat
 const defaultData = {
   name: 'unknown',
@@ -24,6 +26,8 @@ const hostIndex = (req, res) => {
     pageName: 'Home Page',
   });
 };
+
+
 
 // Function for rendering the page1 template
 // Page1 has a loop that iterates over an array of cats
@@ -150,6 +154,36 @@ const setName = async (req, res) => {
   });
 };
 
+const createDog = (req, res) => {
+  if (!req.body.name || !req.body.breed || !req.body.age) {
+    // if not respond with a 400 error
+    // (either through json or a web page depending on the client dev)
+    return res.status(400).json({ error: 'Missing parameter name, breed, and/or age.' });
+  }
+
+  // dummy JSON to insert into database
+  const dogData = {
+    name: req.body.name,
+    breed: req.body.breed,
+    age: req.body.age,
+  };
+
+  const newDog = new Dog(dogData);
+
+  // create new save promise for the database
+  const savePromise = newDog.save();
+
+  savePromise.then(() => {
+    // return success
+    res.json({ name: newDog.name, breed: newDog.breed, age: newDog.age });
+  });
+
+  // if error, return it
+  savePromise.catch((err) => res.json({ err }));
+
+  return res;
+};
+
 // Function to handle searching a cat by name.
 const searchName = async (req, res) => {
   /* When the user makes a POST request, bodyParser populates req.body with the parameters
@@ -195,6 +229,31 @@ const searchName = async (req, res) => {
 
   // Otherwise, we got a result and will send it back to the user.
   return res.json({ name: doc.name, beds: doc.bedsOwned });
+};
+
+const findDogByName = (req, res) => {
+  if (!req.query.name) {
+    return res.json({ error: 'Name is required to perform a search' });
+  }
+
+  return Dog.findByName(req.query.name, (err, doc) => {
+    // errs, handle them
+    if (err) {
+      return res.json({ err }); // if error, return it
+    }
+
+    // if no matches, let them know
+    // (does not necessarily have to be an error since technically it worked correctly)
+    if (!doc) {
+      return res.json({ error: 'No dogs found' });
+    }
+
+    // increment age and return dog to user
+    const dog = doc;
+    dog.age++;
+    dog.save();
+    return res.json({ name: dog.name, breed: dog.breed, age: dog.age });
+  });
 };
 
 /* A function for updating the last cat added to the database.
