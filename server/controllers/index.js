@@ -100,6 +100,10 @@ const hostPage4 = (req, res) => {
   readAllDogs(req, res, callback);
 };
 
+const readAllDogs = (req, res, callback) => {
+  Dog.find(callback);
+};
+
 // Get name will return the name of the last added cat.
 const getName = (req, res) => res.json({ name: lastAdded.name });
 
