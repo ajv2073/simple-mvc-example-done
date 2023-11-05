@@ -155,13 +155,11 @@ const setName = async (req, res) => {
 };
 
 const createDog = (req, res) => {
+  //Missing parameters
   if (!req.body.name || !req.body.breed || !req.body.age) {
-    // if not respond with a 400 error
-    // (either through json or a web page depending on the client dev)
     return res.status(400).json({ error: 'Missing parameter name, breed, and/or age.' });
   }
 
-  // dummy JSON to insert into database
   const dogData = {
     name: req.body.name,
     breed: req.body.breed,
@@ -170,15 +168,14 @@ const createDog = (req, res) => {
 
   const newDog = new Dog(dogData);
 
-  // create new save promise for the database
   const savePromise = newDog.save();
 
   savePromise.then(() => {
-    // return success
+    //success
     res.json({ name: newDog.name, breed: newDog.breed, age: newDog.age });
   });
 
-  // if error, return it
+  //error
   savePromise.catch((err) => res.json({ err }));
 
   return res;
@@ -237,18 +234,14 @@ const findDogByName = (req, res) => {
   }
 
   return Dog.findByName(req.query.name, (err, doc) => {
-    // errs, handle them
     if (err) {
-      return res.json({ err }); // if error, return it
+      return res.json({ err });
     }
 
-    // if no matches, let them know
-    // (does not necessarily have to be an error since technically it worked correctly)
     if (!doc) {
       return res.json({ error: 'No dogs found' });
     }
 
-    // increment age and return dog to user
     const dog = doc;
     dog.age++;
     dog.save();

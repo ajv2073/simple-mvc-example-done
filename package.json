@@ -9,7 +9,7 @@
     "pretest": "eslint ./server --fix",
     "test": "echo \"tests complete\""
   },
-  "author": "Cody Van De Mark / Austin Willoughby",
+  "author": "Andy Vece",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.52.0",
